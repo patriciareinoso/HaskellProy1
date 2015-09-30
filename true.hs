@@ -34,9 +34,12 @@ a = [("x",True),("y",False)] :: Environment
 
 evalP :: Environment -> Proposition -> Maybe Bool
 
-evalP _ (Value b) 	 = Just b
-evalP e (Variable s) = find e s 
--- evalP e (Negation p) = Just (evalP e p)
+evalP _ (Value b) 	      = Just b
+evalP e (Variable s)      = find e s 
+evalP e (Negation p)      = f (evalP e p)	
+							where 
+								f (Just p) = Just (not p)
+								f _ 	   = Nothing
 -- evalP e (Conjunction p q) = (evalP e p) && (evalP e q)
 -- evalP e (Disjunction p q) = (evalP e p) || (evalP e q)
 -- evalP e (Implication p q) = f (evalP e p) (evalP e q)
@@ -44,6 +47,7 @@ evalP e (Variable s) = find e s
 -- where 
 -- 	f True False = Just False
 -- 	f _ _ 		 = Just True
+
 
 --vars :: Proposition -> [String]
 
