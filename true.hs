@@ -34,7 +34,7 @@ a = [("x",True),("y",False)] :: Environment
 
 evalP :: Environment -> Proposition -> Maybe Bool
 
-evalP _ (Value b) 	      = Just b
+evalP _ (Constant b) 	  = Just b
 evalP e (Variable s)      = find e s 
 evalP e (Negation p)      = f (evalP e p)	
 							where 
@@ -58,6 +58,22 @@ evalP e (Implication p q) = f (evalP e p) (evalP e q)
 
 
 
---vars :: Proposition -> [String]
+vars :: Proposition -> [String]
+
+--vars (Constant b) 		= []
+--vars (Variable s)		= s : []
+--vars (Negation p) 		= --vars p 
+--vars (Conjunction p q) 	= --vars p ++ --vars q
+--vars (Disjunction p q)  = --vars p ++ --vars q
+--vars (Implication p q)  = vars p ++ vars q
+
+vars p = f p []
+	where
+		f (Constant b) _ 		= []
+		f (Variable s) xs 		= if elem s xs then xs else s : xs
+		f (Negation p) xs 		= f p xs
+		f (Conjunction p q) xs  = f p (f q xs)
+		f (Disjunction p q) xs  = f p (f q xs)
+		f (Implication p q) xs  = f p (f q xs)
 
 --isTautology :: Proposition -> Bool
