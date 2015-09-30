@@ -40,13 +40,22 @@ evalP e (Negation p)      = f (evalP e p)
 							where 
 								f (Just p) = Just (not p)
 								f _ 	   = Nothing
--- evalP e (Conjunction p q) = (evalP e p) && (evalP e q)
--- evalP e (Disjunction p q) = (evalP e p) || (evalP e q)
--- evalP e (Implication p q) = f (evalP e p) (evalP e q)
+evalP e (Conjunction p q) = f (evalP e p) (evalP e q)
+							where
+								f (Just p) (Just q) = Just (p && q)
+								f _ _ 				= Nothing
+evalP e (Disjunction p q) = f (evalP e p) (evalP e q)
+							where
+								f (Just p) (Just q) = Just (p || q)
+								f _ _ 				= Nothing
 
--- where 
--- 	f True False = Just False
--- 	f _ _ 		 = Just True
+evalP e (Implication p q) = f (evalP e p) (evalP e q)
+							where 
+								f Nothing _ 		       = Nothing
+								f _ Nothing 		       = Nothing
+								f (Just True) (Just False) = Just False
+								f _ _				       = Just True
+
 
 
 --vars :: Proposition -> [String]
