@@ -1,3 +1,13 @@
+-- type Variable = String
+
+data Proposition = Value Bool
+				 | Variable String
+				 | Negation Proposition 
+				 | Conjunction Proposition Proposition 
+				 | Disjunction Proposition Proposition 
+				 | Implication Proposition Proposition
+				 deriving (Show)
+
 type Environment = [(String,Bool)]
 
 find :: Environment -> String -> Maybe Bool
@@ -20,3 +30,10 @@ remove e k = remAux e k []
 			| x==k 		= remAux m k l
 			| otherwise	= remAux m k ((x,y):l)
 a = [("x",True),("y",False)] :: Environment
+
+
+--evalP :: Environment -> Proposition -> Maybe Bool
+
+--vars :: Proposition -> [String]
+
+--isTautology :: Proposition -> Bool
