@@ -1,6 +1,6 @@
 -- type Variable = String
 
-data Proposition = Value Bool
+data Proposition = Constant Bool
 				 | Variable String
 				 | Negation Proposition 
 				 | Conjunction Proposition Proposition 
