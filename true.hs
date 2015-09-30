@@ -16,7 +16,7 @@ addOrReplace l x b = addAux l [] x b
 remove :: Environment -> String -> Environment
 remove e k = remAux e k []
 	where 	remAux [] _ l = reverse l
-		remAux (t@(x,y):m) k l 
+		remAux ((x,y):m) k l 
 			| x==k 		= remAux m k l
 			| otherwise	= remAux m k ((x,y):l)
 a = [("x",True),("y",False)] :: Environment
