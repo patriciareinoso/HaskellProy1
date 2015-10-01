@@ -15,4 +15,6 @@ empty :: Hand
 
 empty = H []
 
---size :: Hand -> Int
+size :: Hand -> Int
+
+size (H h) = length h
