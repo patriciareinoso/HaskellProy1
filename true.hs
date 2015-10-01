@@ -76,9 +76,26 @@ vars p = f p []
 		f (Disjunction p q) xs  = f p (f q xs)
 		f (Implication p q) xs  = f p (f q xs)
 
+aux = map 
+
 genera :: [String] -> [Environment]
 
 genera [x] = [[(x,True)]]
+
+generaPeor :: Proposition -> ( Environment , Environment ) -> ( Environment , Environment )
+
+generaPeor (Constant _) (xs,ys) = (xs,ys)
+generaPeor (Negation (Variable x)) (xs,ys) = if not $ elem x (map fst xs) then ((x,True):xs,ys)
+												else if (snd $ head $ filter ((==x).fst) xs) /= True then (xs, (x,True):ys) 
+														else (xs,ys)
+generaPeor (Negation y) (xs,ys) = generaPeor y (xs,ys)
+generaPeor (Variable x) (xs,ys) = if not $ elem x (map fst xs) then ((x,False):xs,ys)
+									else if (snd $ head $ filter ((==x).fst) xs ) /= False then (xs, (x,False):ys) 
+											else (xs,ys)
+generaPeor (Conjunction x y) t = generaPeor x (generaPeor y t)
+generaPeor (Disjunction x y) t = generaPeor x (generaPeor y t)
+generaPeor (Implication (Variable x) y) t = generaPeor (Negation (Variable x)) (generaPeor y t)
+generaPeor (Implication x y) t = generaPeor x (generaPeor y t)
 
 isTautology :: Proposition -> Bool
 
