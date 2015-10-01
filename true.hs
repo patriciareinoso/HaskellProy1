@@ -69,16 +69,12 @@ vars :: Proposition -> [String]
 
 vars p = f p []
 	where
-		f (Constant b) _ 		= []
+		f (Constant b) xs 		= xs
 		f (Variable s) xs 		= if elem s xs then xs else s : xs
 		f (Negation p) xs 		= f p xs
 		f (Conjunction p q) xs  = f p (f q xs)
 		f (Disjunction p q) xs  = f p (f q xs)
 		f (Implication p q) xs  = f p (f q xs)
-
-genera :: [String] -> [Environment]
-
-genera [x] = [[(x,True)]]
 
 {-
 generaPeor :: Proposition -> ( Environment , Environment ) -> ( Environment , Environment )
@@ -102,11 +98,20 @@ aux :: [String] -> [Environment]
 aux = foldr (\x y -> (map ((x,True):) y) ++ (map ((x,False):) y)) [[]] 
 
 
-isTautology :: Proposition -> Bool
+--isTautology :: Proposition -> Bool
 
-isTautology p =  foldr f True (map (\x -> evalP x p) (genera (vars p)))
+--isTautology p =  genera (vars p)
+isTautology p =  foldr f True (map (\x -> evalP x p) (aux(vars p)))
 
 	where 
 		f (Just a) b = a && b
 		f _ _ 		= error "No está definido"
 
+
+x = Conjunction (Variable "a") (Variable "b")
+y = Conjunction (Variable "c") (Variable "d")
+z = Disjunction x y
+
+w = Conjunction (Constant True) (Constant True)
+w1 = Disjunction (Variable "b") (Constant True)
+w2 = Conjunction (Constant True) (Variable "b")
