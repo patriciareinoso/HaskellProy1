@@ -76,4 +76,14 @@ vars p = f p []
 		f (Disjunction p q) xs  = f p (f q xs)
 		f (Implication p q) xs  = f p (f q xs)
 
---isTautology :: Proposition -> Bool
+genera :: [String] -> [Environment]
+
+genera [x] = [[(x,True)]]
+
+isTautology :: Proposition -> Bool
+
+isTautology p =  foldr f True (map (\x -> evalP x p) (genera (vars p)))
+
+	where 
+		f (Just a) b = a && b
+		f _ _ 		= error "No está definido"
