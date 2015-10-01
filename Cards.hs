@@ -26,10 +26,11 @@ instance Show Card where
 	show c = (show.suit)c ++ (show.value)c
 
 newtype Hand = H [Card]
-				deriving (Show, Read)
+				deriving (Read)
 
---instance Show Hand where
---	show (H (x:xs)) = show xs ++ show x 
+instance Show Hand where
+	show (H []) 	= ""
+	show (H (x:xs)) = show (H xs) ++ show x 
 
 empty :: Hand
 
