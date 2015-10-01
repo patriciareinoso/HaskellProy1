@@ -115,3 +115,6 @@ z = Disjunction x y
 w = Conjunction (Constant True) (Constant True)
 w1 = Disjunction (Variable "b") (Constant True)
 w2 = Conjunction (Constant True) (Variable "b")
+w3 = Implication z w1
+w4 = Conjunction (Constant False) (Variable "b")
+w5 = Disjunction (Constant True) (Conjunction ( Variable "a") (Variable "b"))
