@@ -76,12 +76,11 @@ vars p = f p []
 		f (Disjunction p q) xs  = f p (f q xs)
 		f (Implication p q) xs  = f p (f q xs)
 
-aux = map 
-
 genera :: [String] -> [Environment]
 
 genera [x] = [[(x,True)]]
 
+{-
 generaPeor :: Proposition -> ( Environment , Environment ) -> ( Environment , Environment )
 
 generaPeor (Constant _) (xs,ys) = (xs,ys)
@@ -96,6 +95,12 @@ generaPeor (Conjunction x y) t = generaPeor x (generaPeor y t)
 generaPeor (Disjunction x y) t = generaPeor x (generaPeor y t)
 generaPeor (Implication (Variable x) y) t = generaPeor (Negation (Variable x)) (generaPeor y t)
 generaPeor (Implication x y) t = generaPeor x (generaPeor y t)
+-}
+
+aux :: [String] -> [Environment]
+
+aux = foldr (\x y -> (map ((x,True):) y) ++ (map ((x,False):) y)) [[]] 
+
 
 isTautology :: Proposition -> Bool
 
@@ -104,3 +109,4 @@ isTautology p =  foldr f True (map (\x -> evalP x p) (genera (vars p)))
 	where 
 		f (Just a) b = a && b
 		f _ _ 		= error "No está definido"
+
