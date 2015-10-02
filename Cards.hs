@@ -1,10 +1,12 @@
 data Suit = Clubs | Diamonds | Spades | Hearts deriving(Read)
 
 instance Show Suit where
-	show Clubs    = "C" 
-	show Diamonds = "D" 
-	show Spades   = "S" 
-	show Hearts   = "H"
+	-- show Clubs    = "♣" 
+	show Clubs    = "♧" 
+	show Diamonds = "♦" 
+	--show Spades   = "♠" 
+	show Spades   = "♤" 
+	show Hearts   = "♥"
 
 data Value = Numeric Int | Jack | Queen | King | Ace deriving (Read)
 
@@ -30,7 +32,7 @@ newtype Hand = H [Card]
 
 instance Show Hand where
 	show (H []) 	= ""
-	show (H (x:xs)) = show (H xs) ++ show x 
+	show (H (x:xs)) = show x ++ " " ++ show (H xs)
 
 empty :: Hand
 
@@ -40,9 +42,12 @@ size :: Hand -> Int
 
 size (H h) = length h
 
-x = Diamonds
+x1 = Clubs
+x2 = Diamonds
+x3 = Spades
+x4 = Hearts
 y = Jack
 
-z = Card y x
+z = Card y x1
 
 w = H [z,z,z]
