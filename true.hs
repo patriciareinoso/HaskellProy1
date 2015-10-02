@@ -17,11 +17,13 @@ find ((x,y):l) k
 	| otherwise 	= find l k
 
 addOrReplace :: Environment -> String -> Bool -> Environment
-addOrReplace l x b = addAux l [] x b
-	where 	addAux [] l x b = (x,b):reverse l
-		addAux (t@(l,m):n) q x b 
-			| l == x 	= reverse ((x,b):q) ++ n
-			| otherwise	= addAux n (t:q) x b
+addOrReplace l x b = addAux l [] x b False
+	where 	addAux [] l x b cond
+				| cond 		= reverse l
+				| not cond  = (x,b):reverse l
+		addAux (t@(l,m):n) q x b cond
+			| l == x 	= addAux n ((x,b):q) x b (not cond)
+			| otherwise	= addAux n (t:q) x b cond
 
 remove :: Environment -> String -> Environment
 remove e k = remAux e k []
@@ -29,6 +31,8 @@ remove e k = remAux e k []
 		remAux ((x,y):m) k l 
 			| x==k 		= remAux m k l
 			| otherwise	= remAux m k ((x,y):l)
+
+a = [("x",True),("y",False)] :: Environment
 
 evalP :: Environment -> Proposition -> Maybe Bool
 
