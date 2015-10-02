@@ -11,7 +11,7 @@ instance Show Suit where
 data Value = Numeric Int | Jack | Queen | King | Ace deriving (Read)
 
 instance Show Value where
-	-- show (Numeric Int) = (Numeric Int)
+	show (Numeric x) = show x
 	show Jack 	= "J"
 	show Queen 	= "Q"
 	show King 	= "K"
@@ -46,8 +46,13 @@ x1 = Clubs
 x2 = Diamonds
 x3 = Spades
 x4 = Hearts
-y = Jack
 
-z = Card y x1
+y1 = Jack
+y2 = Numeric 10
+y3 = Numeric 5
 
-w = H [z,z,z]
+z1 = Card y1 x1
+z2 = Card y2 x2
+z3 = Card y3 x3
+
+w = H [z1,z2,z3]
