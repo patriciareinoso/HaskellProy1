@@ -29,8 +29,6 @@ remove e k = remAux e k []
 		remAux ((x,y):m) k l 
 			| x==k 		= remAux m k l
 			| otherwise	= remAux m k ((x,y):l)
-a = [("x",True),("y",False)] :: Environment
-
 
 evalP :: Environment -> Proposition -> Maybe Bool
 
@@ -118,3 +116,34 @@ w2 = Conjunction (Constant True) (Variable "b")
 w3 = Implication z w1
 w4 = Conjunction (Constant False) (Variable "b")
 w5 = Disjunction (Constant True) (Conjunction ( Variable "a") (Variable "b"))
+
+--3.76 b
+deb = Implication (Conjunction (Variable "p") (Variable "q")) (Variable "p")
+
+--Una contradicción random
+contrad = Conjunction (Implication (Variable "p") (Variable "q")) (Conjunction (Variable "p") (Negation (Variable "q")))
+
+--Contingencia
+conting= Disjunction (Variable "p") (Implication (Variable "q") (Variable "r"))
+
+-- Implicaciones (tautologia)
+
+impl = Implication (Conjunction (Implication (Variable "p") (Variable "q")) (Implication (Variable "q") (Variable "r"))) (Implication (Variable "p") (Variable "r"))
+
+-- Random (tautologia)
+
+rand1= Implication (Conjunction (Disjunction (Variable "p") (Variable "q")) 
+					(Negation (Variable "q"))) (Variable "p")
+
+-- (((p -> q) & (¬ p -> r)) & (¬ q -> ¬ r)) -> q
+
+rand2 = Implication 
+			(Conjunction 
+				(Conjunction (Implication (Variable "p") (Variable "q")) (Implication (Negation (Variable "p")) (Variable "r"))) 
+				(Implication (Negation (Variable "q")) (Negation (Variable "r")))) 
+			(Variable "q")
+
+
+
+
+
