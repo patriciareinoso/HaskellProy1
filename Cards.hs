@@ -1,3 +1,6 @@
+module Cards ( Hand(H), Suit (Clubs,Diamonds,Spades,Hearts), Value (Numeric,Jack,Queen,King,Ace), Card(Card),
+				empty, size, cardValue ) where
+
 data Suit = Clubs | Diamonds | Spades | Hearts deriving(Read)
 
 instance Show Suit where
@@ -41,6 +44,14 @@ empty = H []
 size :: Hand -> Int
 
 size (H h) = length h
+
+
+
+cardValue :: Card -> Int
+
+cardValue (Card (Numeric n) _)	= n
+cardValue (Card Ace _)			= 11
+cardValue (Card _ _)			= 10
 
 x1 = Clubs
 x2 = Diamonds
