@@ -17,13 +17,18 @@ winner h1 h2 = if busted h1 && busted h2 then LambdaJack
 							else LambdaJack 
 
 fullDeck :: Hand
-fullDeck = H [ Card x y | x<-map (Numeric) [1..10] ++ [Jack , Queen , King , Ace], y<-[Clubs , Diamonds , Spades , Hearts]  ]
+fullDeck = H [ Card x y | x<-map (Numeric) [2..10] ++ [Jack , Queen , King , Ace], y<-[Clubs , Diamonds , Spades , Hearts]  ]
+
+draw :: Hand -> Hand -> Maybe (Hand,Hand)
+draw d@(H []) h = Just (d,h)
+draw (H (x:xs)) (H ys) = Just (H xs, (H (x:ys)))
+
+playLambda :: Hand -> Hand
+playLambda d = auxL d (H [])
+	where	auxL (H []) h = h
+		auxL (H (x:xs)) h@(H ys) = if value (H [x]) + value h >=16 then (H (x:ys)) else auxL (H xs) (H (x:ys))
+		
+-- shuffle :: StdGen -> Hand -> Hand
 
 me = H [ Card Ace Hearts, Card King Hearts]
 pc = H [ Card Ace Hearts, Card King Hearts, Card Ace Diamonds, Card King Diamonds]
-
--- draw :: Hand -> Hand -> Maybe (Hand,Hand)
-
--- playLambda :: Hand -> Hand
-
--- shuffle :: StdGen -> Hand -> Hand

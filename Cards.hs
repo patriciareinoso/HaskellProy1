@@ -45,8 +45,6 @@ size :: Hand -> Int
 
 size (H h) = length h
 
-
-
 cardValue :: Card -> Int
 
 cardValue (Card (Numeric n) _)	= n
