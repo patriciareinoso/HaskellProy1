@@ -40,9 +40,8 @@ shuffle g (H a) = first $ foldl checkCard ((H []),g,a) a
 											then checkCard (n,snd ng,a) x
 											else ((H (ne:ns)),snd ng,a) 
 			first (a,b,c) 		= a
-
-cards (H xs) = xs
-cNub (H xs) = L.nub xs 
+ 
+differents (H xs) = and $ map (/=head xs) (tail xs)
 
 me = H [ Card Ace Hearts, Card King Hearts]
 pc = H [ Card Ace Hearts, Card King Hearts, Card Ace Diamonds, Card King Diamonds]
