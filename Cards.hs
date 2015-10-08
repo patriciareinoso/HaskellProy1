@@ -1,7 +1,7 @@
 module Cards ( Hand(H), Suit (Clubs,Diamonds,Spades,Hearts), Value (Numeric,Jack,Queen,King,Ace), Card(Card),
 				empty, size, cardValue ) where
 
-data Suit = Clubs | Diamonds | Spades | Hearts deriving(Read)
+data Suit = Clubs | Diamonds | Spades | Hearts deriving(Read,Eq)
 
 instance Show Suit where
 	-- show Clubs    = "♣" 
@@ -11,7 +11,7 @@ instance Show Suit where
 	show Spades   = "♤" 
 	show Hearts   = "♥"
 
-data Value = Numeric Int | Jack | Queen | King | Ace deriving (Read)
+data Value = Numeric Int | Jack | Queen | King | Ace deriving (Read,Eq)
 
 instance Show Value where
 	show (Numeric n) = show n
@@ -29,6 +29,10 @@ data Card = Card {
 instance Show Card where
 	--show (Card v s) = show s ++ show v
 	show c = (show.suit)c ++ (show.value)c
+
+instance Eq Card where
+	(==) (Card a b) (Card c d) 	= (a==c) && (b==d)
+	(/=) c v 					= not (c==v)
 
 newtype Hand = H [Card]
 				deriving (Read)
