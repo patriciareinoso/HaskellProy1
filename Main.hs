@@ -15,7 +15,10 @@ welcome = return "Bienvenido a LamdaJack"
 
 currentState :: GameState -> IO ()
 
-currentState g = putStrLn $ "Después de " ++ (show.games)g ++ " partidas Lambda ha ganado " ++ (show.lamdaWins)g ++ " y " ++ (name)g ++ " ha ganado " ++ show ((games)g - (lamdaWins)g)
+currentState g = putStrLn ( "Después de " ++ (show.games)g ++ 
+							" partidas Lambda ha ganado "  ++
+							(show.lamdaWins)g ++ " y " ++ (name)g ++ 
+							" ha ganado " ++ show ((games)g - (lamdaWins)g))
 
 options :: Char -> IO Bool
 options x 
