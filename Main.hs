@@ -17,17 +17,18 @@ currentState :: GameState -> IO ()
 
 currentState g = putStrLn $ "Después de " ++ (show.games)g ++ " partidas Lambda ha ganado " ++ (show.lamdaWins)g ++ " y " ++ (name)g ++ " ha ganado " ++ show ((games)g - (lamdaWins)g)
 
+options :: Char -> IO Bool
+options x 
+	|x == 's' = return True
+	|x == 'n' = return False
+	|otherwise = continuePlaying
+
 continuePlaying :: IO Bool
 
 continuePlaying = do
 	putStrLn "¿Desea seguir jugando? [s/n]\n"
 	r <- getChar 
-	if r == 's' 
-	then return True 
-	else 
-		if r == 'n' 
-		then return False
-		else continuePlaying
+	options r
 	
 
 -- gameloop :: GameState -> IO ()
