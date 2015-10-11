@@ -27,8 +27,8 @@ continuePlaying :: IO Bool
 
 continuePlaying = do
 	putStrLn "\n¿Desea seguir jugando? [s/n]"
-	r <- getChar 
-	options r
+	x <- getChar 
+	options x
 	
 	where options x 
 		|x == 's' || x == 'S' = return True
@@ -41,8 +41,8 @@ anotherCard :: String -> Hand -> IO Bool
 anotherCard s h = do
 	playerMsg s h
 	putStrLn $ ". ¿Carta o Listo? [c/l]"
-	r <- getChar
-	options r
+	x <- getChar
+	options x
 
 	where options x 
 		|x == 'c' || x == 'C' = return True
@@ -83,10 +83,21 @@ gameloop g = do
 	playerMsg ((name)g) youdeck
 	putStrLn ". Mi turno."
 	let lambdadeck = playLambda deck 
+	--muestra su mano final y anuncia el resultado, indicando
 	lambdaMsg lambdadeck
+	-- Dependiendo del resultado del juego, en el lugar de debe escribirse ‘Yo gano’,
+	-- ‘Tu ganas’, ‘Empatamos, así que yo gano.’
 	winnerMsg lambdadeck youdeck
 
--- y genera una mano inicial con dos cartas para el jugador
+	-- ACTUALIZAR GAME STATE 
+	currentState g
+
+	x <- continuePlaying
+	if x 
+	then gameloop (GS ((games)g+1) ((lambdaWins)g) ((name)g) ((generator)g))
+	else putStrLn "\nFin del juego"
+
+
 
 p = GS 0 0 "Patty" (R.mkStdGen 42)
 x1 = Clubs
