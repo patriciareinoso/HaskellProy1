@@ -97,6 +97,7 @@ gameloop g = do
 	then gameloop (GS ((games)g+1) ((lambdaWins)g) ((name)g) ((generator)g))
 	else putStrLn "\nFin del juego"
 
+main = welcome >>= (\c -> putStrLn c) >> putStrLn "\n¿Cómo te llamas?" >> getLine >>= (\name->gameloop (GS 0 0 name (R.mkStdGen 42)))
 
 
 p = GS 0 0 "Patty" (R.mkStdGen 42)
