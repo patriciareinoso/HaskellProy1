@@ -72,11 +72,19 @@ winnerMsg h1 h2 = if (value h1) == (value h2)
 gameloop :: GameState -> IO ()
 
 gameloop g = do
- 
-	let mazo = shuffle ((generator)g) fullDeck
-	print mazo
-	anotherCard "Patty" empty
-	lambdaMsg empty
+	-- prepara un mazo nuevo, lo baraja, 
+	let deck = shuffle ((generator)g) fullDeck
+	-- genera una mano inicial con dos cartas para el jugador
+	let youdeck = deck
+	-- debe presentar las cartas al jugador, indicar su puntuación
+	-- preguntar si desea otra carta o «se queda»
+	anotherCard ((name)g) youdeck
+	
+	playerMsg ((name)g) youdeck
+	putStrLn ". Mi turno."
+	let lambdadeck = playLambda deck 
+	lambdaMsg lambdadeck
+	winnerMsg lambdadeck youdeck
 
 -- y genera una mano inicial con dos cartas para el jugador
 
