@@ -23,7 +23,6 @@ currentState g = putStrLn ( "Después de " ++ (show.games)g ++
 							" ha ganado " ++ show ((games)g - (lambdaWins)g))
 
 
-
 continuePlaying :: IO Bool
 
 continuePlaying = do
@@ -40,7 +39,8 @@ continuePlaying = do
 anotherCard :: String -> Hand -> IO Bool
 
 anotherCard s h = do
-	putStrLn $ "\n" ++ s ++ ", tu mano es " ++ show h ++ " Suma " ++ show (value h) ++ ". ¿Carta o Listo? [c/l]"
+	playerMsg s h
+	putStrLn $ ". ¿Carta o Listo? [c/l]"
 	r <- getChar
 	options r
 
@@ -49,12 +49,24 @@ anotherCard s h = do
 		|x == 'l' || x == 'L' = return False
 		|otherwise = anotherCard s h
 
+playerMsg :: String -> Hand -> IO ()
+
+playerMsg s h = do
+	putStr $ "\n" ++ s ++ ", tu mano es " ++ show h ++ " , suma " ++ show (value h) 
+
+lambdaMsg :: Hand -> IO ()
+
+lambdaMsg h = do 
+	putStrLn $ "\nMi mano es " ++ show h ++ ", suma " ++ show (value h)
+
 gameloop :: GameState -> IO ()
 
 gameloop g = do
  
 	let mazo = shuffle ((generator)g) fullDeck
 	print mazo
+	anotherCard "Patty" empty
+	lambdaMsg empty
 
 -- y genera una mano inicial con dos cartas para el jugador
 
