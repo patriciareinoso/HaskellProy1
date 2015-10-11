@@ -18,7 +18,7 @@ winner :: Hand -> Hand -> Player
 winner h1 h2 = if busted h1 && busted h2 then LambdaJack
 				else if busted h2 then You
 					else if busted h1 then LambdaJack
-						else if value h1 > value h2 then You
+						else if value h1 < value h2 then You
 							else LambdaJack 
 
 fullDeck :: Hand
