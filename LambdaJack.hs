@@ -1,3 +1,6 @@
+module LambdaJack (Player (LambdaJack, You),value, busted, winner, fullDeck, draw, playLambda, shuffle)
+	where
+
 import Cards as C
 import qualified System.Random as R
 import qualified Data.List as L
