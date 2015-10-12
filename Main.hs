@@ -49,6 +49,19 @@ anotherCard s h = do
 		|x == 'l' || x == 'L' = return False
 		|otherwise = anotherCard s h
 
+--anotherCard2 :: String -> Hand -> IO()
+
+anotherCard2 s h1 h2 = do
+	playerMsg s h2
+	putStrLn $ ". ¿Carta o Listo? [c/l]"
+	x <- getChar
+	options x
+
+	where options x 
+		|x == 'c' || x == 'C' = anotherCard2 s (fst (reparte h1 h2)) (snd (reparte h1 h2))
+		|x == 'l' || x == 'L' = return (h1,h2)
+		|otherwise = anotherCard2 s h1 h2
+
 playerMsg :: String -> Hand -> IO ()
 
 playerMsg s h = do
@@ -69,6 +82,16 @@ winnerMsg h1 h2 = if (value h1) == (value h2)
 				  			f You 		 = putStrLn "\nTu ganas"
 
 
+
+
+reparte :: Hand -> Hand -> (Hand, Hand)
+
+reparte h1 h2 = if size h2 < 1
+				then reparte (fst (f  (draw h1 h2))) (snd (f(draw h1 h2)))
+				else f (draw h1 h2)
+				where 
+					f (Just (x,y)) = (x,y)
+
 gameloop :: GameState -> IO ()
 
 gameloop g = do
@@ -79,8 +102,7 @@ gameloop g = do
 	-- debe presentar las cartas al jugador, indicar su puntuación
 	-- preguntar si desea otra carta o «se queda»
 	anotherCard ((name)g) youdeck
-	
-	playerMsg ((name)g) youdeck
+
 	putStrLn ". Mi turno."
 	let lambdadeck = playLambda deck 
 	--muestra su mano final y anuncia el resultado, indicando
