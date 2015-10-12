@@ -17,7 +17,7 @@ welcome = return "Bienvenido a LambdaJack"
 
 currentState :: GameState -> IO ()
 
-currentState g = putStrLn ( "Después de " ++ (show.games)g ++ 
+currentState g = putStrLn ( "\nDespués de " ++ (show.games)g ++ 
 							" partidas Lambda ha ganado "  ++
 							(show.lambdaWins)g ++ " y " ++ (name)g ++ 
 							" ha ganado " ++ show ((games)g - (lambdaWins)g))
@@ -49,7 +49,7 @@ anotherCard s h = do
 		|x == 'l' || x == 'L' = return False
 		|otherwise = anotherCard s h
 
---anotherCard2 :: String -> Hand -> IO()
+anotherCard2 :: String -> Hand -> Hand -> IO (Hand, Hand)
 
 anotherCard2 s h1 h2 = do
 	playerMsg s h2
@@ -58,9 +58,17 @@ anotherCard2 s h1 h2 = do
 	options x
 
 	where options x 
-		|x == 'c' || x == 'C' = anotherCard2 s (fst (reparte h1 h2)) (snd (reparte h1 h2))
+		|x == 'c' || x == 'C' = anotherCard2 s (fst (getCard h1 h2)) (snd (getCard h1 h2))
 		|x == 'l' || x == 'L' = return (h1,h2)
 		|otherwise = anotherCard2 s h1 h2
+
+getCard :: Hand -> Hand -> (Hand, Hand)
+
+getCard h1 h2 = if size h2 < 1
+				then getCard (fst (f  (draw h1 h2))) (snd (f(draw h1 h2)))
+				else f (draw h1 h2)
+				where 
+					f (Just (x,y)) = (x,y)
 
 playerMsg :: String -> Hand -> IO ()
 
@@ -84,13 +92,6 @@ winnerMsg h1 h2 = if (value h1) == (value h2)
 
 
 
-reparte :: Hand -> Hand -> (Hand, Hand)
-
-reparte h1 h2 = if size h2 < 1
-				then reparte (fst (f  (draw h1 h2))) (snd (f(draw h1 h2)))
-				else f (draw h1 h2)
-				where 
-					f (Just (x,y)) = (x,y)
 
 gameloop :: GameState -> IO ()
 
@@ -101,15 +102,20 @@ gameloop g = do
 	let youdeck = deck
 	-- debe presentar las cartas al jugador, indicar su puntuación
 	-- preguntar si desea otra carta o «se queda»
-	anotherCard ((name)g) youdeck
+
+	let initial = getCard (shuffle ((generator)g) fullDeck) empty
+
+	afteryou <- anotherCard2 ((name)g) (fst initial) (snd initial)
+	playerMsg ((name)g) (snd afteryou)
 
 	putStrLn ". Mi turno."
-	let lambdadeck = playLambda deck 
+
+	let lambdahand = playLambda (fst afteryou) 
 	--muestra su mano final y anuncia el resultado, indicando
-	lambdaMsg lambdadeck
+	lambdaMsg lambdahand
 	-- Dependiendo del resultado del juego, en el lugar de debe escribirse ‘Yo gano’,
 	-- ‘Tu ganas’, ‘Empatamos, así que yo gano.’
-	winnerMsg lambdadeck youdeck
+	--winnerMsg lambdahand (snd afteryou)
 
 	-- ACTUALIZAR GAME STATE 
 	currentState g
