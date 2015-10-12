@@ -139,17 +139,13 @@ gameloop g = do
 	let lambdahand = playLambda (fst afteryou) 
 	--muestra su mano final y anuncia el resultado, indicando
 	lambdaMsg lambdahand
-	-- Dependiendo del resultado del juego, en el lugar de debe escribirse ‘Yo gano’,
-	-- ‘Tu ganas’, ‘Empatamos, así que yo gano.’
-	--winnerMsg lambdahand (snd afteryou)
-
-	-- ACTUALIZAR GAME STATE 
+	-- actualiza gamestate y muestra mensaje correspondiente
 	newstate <- updateState lambdahand (snd afteryou) g
 	currentState newstate
 
 	x <- continuePlaying
 	if x 
-	then gameloop (GS ((games)g+1) ((lambdaWins)g) ((name)g) ((generator)g))
+	then gameloop newstate
 	else putStrLn "\nFin del juego"
 
 main = welcome >>= (\c -> putStrLn c) >> putStrLn "\n¿Cómo te llamas?" >> getLine >>= (\name->gameloop (GS 0 0 name (R.mkStdGen 42)))
