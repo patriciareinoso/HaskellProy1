@@ -89,7 +89,33 @@ winnerMsg h1 h2 = if (value h1) == (value h2)
 				  			f LambdaJack = putStrLn "\nYo gano" 
 				  			f You 		 = putStrLn "\nTu ganas"
 
+updateState :: Hand -> Hand -> GameState -> IO GameState
 
+updateState h1 h2 g = do
+	if (value h1) == (value h2)
+	then isTie g
+	else f (winner h1 h2)
+		where 
+			f LambdaJack = winnerLambda g
+			f You 		 = winnerYou g
+
+isTie :: GameState -> IO GameState
+
+isTie g = do
+	putStrLn "\nEmpatamos, así que yo gano"
+	return (GS ((games)g+1) ((lambdaWins)g+1) ((name)g) ((generator)g))
+
+winnerLambda :: GameState -> IO GameState
+
+winnerLambda g  = do
+	putStrLn "\nYo gano"
+	return (GS ((games)g+1) ((lambdaWins)g+1) ((name)g) ((generator)g))
+
+winnerYou :: GameState -> IO GameState
+
+winnerYou g  = do
+	putStrLn "\nTu ganas"
+	return (GS ((games)g+1) ((lambdaWins)g) ((name)g) ((generator)g))
 
 
 
@@ -97,19 +123,19 @@ gameloop :: GameState -> IO ()
 
 gameloop g = do
 	-- prepara un mazo nuevo, lo baraja, 
-	let deck = shuffle ((generator)g) fullDeck
 	-- genera una mano inicial con dos cartas para el jugador
-	let youdeck = deck
-	-- debe presentar las cartas al jugador, indicar su puntuación
-	-- preguntar si desea otra carta o «se queda»
 
 	let initial = getCard (shuffle ((generator)g) fullDeck) empty
+	
+	-- preguntar si desea otra carta o «se queda»
+	-- debe presentar las cartas al jugador, indicar su puntuación
 
 	afteryou <- anotherCard2 ((name)g) (fst initial) (snd initial)
+	
+	-- mano de You cuando decide cambiar de turno
 	playerMsg ((name)g) (snd afteryou)
-
 	putStrLn ". Mi turno."
-
+	--juega Lambda
 	let lambdahand = playLambda (fst afteryou) 
 	--muestra su mano final y anuncia el resultado, indicando
 	lambdaMsg lambdahand
@@ -118,7 +144,8 @@ gameloop g = do
 	--winnerMsg lambdahand (snd afteryou)
 
 	-- ACTUALIZAR GAME STATE 
-	currentState g
+	newstate <- updateState lambdahand (snd afteryou) g
+	currentState newstate
 
 	x <- continuePlaying
 	if x 
