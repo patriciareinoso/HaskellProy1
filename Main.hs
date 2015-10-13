@@ -38,6 +38,9 @@ continuePlaying = do
 anotherCard :: String -> Hand -> Hand -> IO (Hand, Hand)
 
 anotherCard s h1 h2 = do
+	if (busted h2)
+	then return (h1,h2)
+	else do
 	playerMsg s h2
 	putStrLn $ ". ¿Carta o Listo? [c/l]"
 	x <- getChar
@@ -58,12 +61,12 @@ getCard h1 h2 = if size h2 < 1
 playerMsg :: String -> Hand -> IO ()
 
 playerMsg s h = do
-	putStr $ "\n" ++ s ++ ", tu mano es " ++ show h ++ ", suma " ++ show (value h) 
+	putStr $ "\n" ++ s ++ ", tu mano es " ++ show h ++ ", suma " ++ show (value h) ++ ". "
 
 lambdaMsg :: Hand -> IO ()
 
 lambdaMsg h = do 
-	putStrLn $ "\nMi mano es " ++ show h ++ ", suma " ++ show (value h)
+	putStrLn $ "\nMi mano es " ++ show h ++ ", suma " ++ show (value h) ++ ". "
 
 {-
 winnerMsg :: Hand -> Hand -> IO ()
@@ -119,17 +122,19 @@ gameloop g = do
 	-- preguntar si desea otra carta o «se queda»
 	-- debe presentar las cartas al jugador, indicar su puntuación
 
-	afteryou <- anotherCard ((name)g) (fst initial) (snd initial)
+	changeturn <- anotherCard ((name)g) (fst initial) (snd initial)
 	
+	playerMsg ((name)g) (snd changeturn)
+	if busted (snd changeturn)
+	then putStrLn "Perdiste."	
 	-- mano de You cuando decide cambiar de turno
-	playerMsg ((name)g) (snd afteryou)
-	putStrLn ". Mi turno."
+	else putStrLn "Mi turno."
 	--juega Lambda
-	let lambdahand = playLambda (fst afteryou) 
+	let lambdahand = playLambda (fst changeturn) 
 	--muestra su mano final y anuncia el resultado, indicando
 	lambdaMsg lambdahand
 	-- actualiza gamestate y muestra mensaje correspondiente
-	newstate <- updateState lambdahand (snd afteryou) g
+	newstate <- updateState lambdahand (snd changeturn) g
 	currentState newstate
 
 	x <- continuePlaying
