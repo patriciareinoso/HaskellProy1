@@ -13,24 +13,26 @@ type Environment = [(String,Bool)]
 find :: Environment -> String -> Maybe Bool
 find [] _ = Nothing
 find ((x,y):l) k
-	| x == k 	= Just y
+	| x == k 		= Just y
 	| otherwise 	= find l k
 
 addOrReplace :: Environment -> String -> Bool -> Environment
-addOrReplace l x b = addAux l [] x b False
-	where 	addAux [] l x b cond
-				| cond 		= reverse l
-				| not cond  = (x,b):reverse l
-		addAux (t@(l,m):n) q x b cond
-			| l == x 	= addAux n ((x,b):q) x b (not cond)
-			| otherwise	= addAux n (t:q) x b cond
-
+addOrReplace l x b = 	if find l x == Nothing
+							then (x,b):l
+							else addAux l [] x b
+	where 	
+		addAux [] l x b = reverse l
+		addAux (t@(l,m):n) q x b
+			| l == x 	= addAux n ((x,b):q) x b
+			| otherwise	= addAux n (t:q) x b
+		
 remove :: Environment -> String -> Environment
 remove e k = remAux e k []
-	where 	remAux [] _ l = reverse l
+	where 	
+		remAux [] _ l 				= reverse l
 		remAux ((x,y):m) k l 
-			| x==k 		= remAux m k l
-			| otherwise	= remAux m k ((x,y):l)
+			| x==k 					= remAux m k l
+			| otherwise				= remAux m k ((x,y):l)
 
 a = [("x",True),("y",False)] :: Environment
 
@@ -95,17 +97,11 @@ generaPeor (Implication (Variable x) y) t = generaPeor (Negation (Variable x)) (
 generaPeor (Implication x y) t = generaPeor x (generaPeor y t)
 -}
 
-aux :: [String] -> [Environment]
 
-aux = foldr (\x y -> (map ((x,True):) y) ++ (map ((x,False):) y)) [[]] 
-
-
---isTautology :: Proposition -> Bool
-
---isTautology p =  genera (vars p)
+isTautology :: Proposition -> Bool
 isTautology p =  foldr f True (map (\x -> evalP x p) (aux(vars p)))
-
 	where 
+		aux = foldr (\x y -> (map ((x,True):) y) ++ (map ((x,False):) y)) [[]] 
 		f (Just a) b = a && b
 		f _ _ 		= error "No está definido"
 

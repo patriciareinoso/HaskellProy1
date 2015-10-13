@@ -31,7 +31,7 @@ draw (H (x:xs)) (H ys) = Just (H xs, (H (x:ys)))
 playLambda :: Hand -> Hand
 playLambda d = auxL d (H [])
 	where	auxL (H []) h = h
-		auxL (H (x:xs)) h@(H ys) = if value (H [x]) + value h >=16 then (H (x:ys)) else auxL (H xs) (H (x:ys))
+		auxL (H (x:xs)) h@(H ys) = if value (H (x:ys)) >=16 then (H (x:ys)) else auxL (H xs) (H (x:ys))
 		
 shuffle :: R.StdGen -> Hand -> Hand
 shuffle g (H a) = first $ foldl checkCard ((H []),g,a) a

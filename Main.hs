@@ -35,32 +35,17 @@ continuePlaying = do
 		|x == 'n' || x == 'N' = return False
 		|otherwise = continuePlaying
 
+anotherCard :: String -> Hand -> Hand -> IO (Hand, Hand)
 
-anotherCard :: String -> Hand -> IO Bool
-
-anotherCard s h = do
-	playerMsg s h
-	putStrLn $ ". ¿Carta o Listo? [c/l]"
-	x <- getChar
-	options x
-
-	where options x 
-		|x == 'c' || x == 'C' = return True
-		|x == 'l' || x == 'L' = return False
-		|otherwise = anotherCard s h
-
-anotherCard2 :: String -> Hand -> Hand -> IO (Hand, Hand)
-
-anotherCard2 s h1 h2 = do
+anotherCard s h1 h2 = do
 	playerMsg s h2
 	putStrLn $ ". ¿Carta o Listo? [c/l]"
 	x <- getChar
 	options x
-
 	where options x 
-		|x == 'c' || x == 'C' = anotherCard2 s (fst (getCard h1 h2)) (snd (getCard h1 h2))
+		|x == 'c' || x == 'C' = anotherCard s (fst (getCard h1 h2)) (snd (getCard h1 h2))
 		|x == 'l' || x == 'L' = return (h1,h2)
-		|otherwise = anotherCard2 s h1 h2
+		|otherwise = anotherCard s h1 h2
 
 getCard :: Hand -> Hand -> (Hand, Hand)
 
@@ -73,13 +58,14 @@ getCard h1 h2 = if size h2 < 1
 playerMsg :: String -> Hand -> IO ()
 
 playerMsg s h = do
-	putStr $ "\n" ++ s ++ ", tu mano es " ++ show h ++ " , suma " ++ show (value h) 
+	putStr $ "\n" ++ s ++ ", tu mano es " ++ show h ++ ", suma " ++ show (value h) 
 
 lambdaMsg :: Hand -> IO ()
 
 lambdaMsg h = do 
 	putStrLn $ "\nMi mano es " ++ show h ++ ", suma " ++ show (value h)
 
+{-
 winnerMsg :: Hand -> Hand -> IO ()
 
 winnerMsg h1 h2 = if (value h1) == (value h2)
@@ -88,6 +74,7 @@ winnerMsg h1 h2 = if (value h1) == (value h2)
 				  		where 
 				  			f LambdaJack = putStrLn "\nYo gano" 
 				  			f You 		 = putStrLn "\nTu ganas"
+-}
 
 updateState :: Hand -> Hand -> GameState -> IO GameState
 
@@ -125,12 +112,14 @@ gameloop g = do
 	-- prepara un mazo nuevo, lo baraja, 
 	-- genera una mano inicial con dos cartas para el jugador
 
-	let initial = getCard (shuffle ((generator)g) fullDeck) empty
+	gen<-R.newStdGen
+	--cambiar gen por ((generator)g)
+	let initial = getCard (shuffle gen fullDeck) empty
 	
 	-- preguntar si desea otra carta o «se queda»
 	-- debe presentar las cartas al jugador, indicar su puntuación
 
-	afteryou <- anotherCard2 ((name)g) (fst initial) (snd initial)
+	afteryou <- anotherCard ((name)g) (fst initial) (snd initial)
 	
 	-- mano de You cuando decide cambiar de turno
 	playerMsg ((name)g) (snd afteryou)
@@ -146,9 +135,10 @@ gameloop g = do
 	x <- continuePlaying
 	if x 
 	then gameloop newstate
-	else putStrLn "\nFin del juego"
+	else putStrLn "\n\nFin del juego\n"
 
-main = welcome >>= (\c -> putStrLn c) >> putStrLn "\n¿Cómo te llamas?" >> getLine >>= (\name->gameloop (GS 0 0 name (R.mkStdGen 42)))
+main = welcome 	>>= (\c -> putStrLn c) >> putStrLn "\n¿Cómo te llamas?" >> getLine 
+				>>= (\name->gameloop (GS 0 0 name (R.mkStdGen 42)))
 
 
 p = GS 0 0 "Patty" (R.mkStdGen 42)
