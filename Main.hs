@@ -42,7 +42,7 @@ anotherCard s h1 h2 = do
 	then return (h1,h2)
 	else do
 	playerMsg s h2
-	putStrLn $ ". ¿Carta o Listo? [c/l]"
+	putStrLn $ "¿Carta o Listo? [c/l]"
 	x <- getChar
 	options x
 	where options x 
