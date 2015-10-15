@@ -1,18 +1,27 @@
+{-
+	Cards.hs
+	Módulo con los tipos de datos y funciones necesarias para la manipulación de cartas utilizadas en Lambda-Jack
+	Hecho por:	Richard Lares 		11-10508
+				Patricia Reinoso 	11-10851
+-}
+
 module Cards ( Hand(H), Suit (Clubs,Diamonds,Spades,Hearts), Value (Numeric,Jack,Queen,King,Ace), Card(Card),
-				empty, size, cardValue ) where
+				empty, size ) where
 
-data Suit = Clubs | Diamonds | Spades | Hearts deriving(Read,Eq)
+-- Tipo de datos para representar los "palos" de la baraja francesa: Trébol, Diamante, Pica y Corazón
+data Suit = Clubs | Diamonds | Spades | Hearts deriving (Eq)
 
+-- Se define show para cada constructor, cambiando su nombre por śu símbolo
 instance Show Suit where
-	-- show Clubs    = "♣" 
 	show Clubs    = "♧" 
 	show Diamonds = "♦" 
-	--show Spades   = "♠" 
 	show Spades   = "♤" 
 	show Hearts   = "♥"
 
-data Value = Numeric Int | Jack | Queen | King | Ace deriving (Read,Eq)
+-- Tipo de datos para representar los valores de las cartas: 1-10, J, Q, K, y A
+data Value = Numeric Int | Jack | Queen | King | Ace deriving (Eq)
 
+-- Se define show para mostrar el número o letra asociado a cada valor
 instance Show Value where
 	show (Numeric n) = show n
 	show Jack 	= "J"
@@ -20,58 +29,33 @@ instance Show Value where
 	show King 	= "K"
 	show Ace 	= "A"
 
+-- Tipo de datos para representar la baraja francesa
 data Card = Card {
 					value :: Value,
 					suit :: Suit
 				 }
-				 deriving (Read)
 
+-- Se define show para mostrar el palo y el valor de una carta, en lugar de sus constructores
 instance Show Card where
-	--show (Card v s) = show s ++ show v
 	show c = (show.suit)c ++ (show.value)c
 
+-- Se define eq, de manera que dos cartas son iguales cuando tienen mismo palo y mismo valor, y son diferentes eoc
 instance Eq Card where
 	(==) (Card a b) (Card c d) 	= (a==c) && (b==d)
 	(/=) c v 					= not (c==v)
 
+-- Tipo de datos para modelar la mano de cartas de un jugador
 newtype Hand = H [Card]
-				deriving (Read)
 
+-- Se define show para mostrar las cartas que tiene un jugador en su "mano"
 instance Show Hand where
 	show (H []) 	= ""
 	show (H (x:xs)) = show x ++ " " ++ show (H xs)
 
+-- La función empty produce una mano vacía
 empty :: Hand
-
 empty = H []
 
+-- La función size determina la cantidad de cartas en una mano
 size :: Hand -> Int
-
 size (H h) = length h
-
-cardValue :: Card -> Int
-
-cardValue (Card (Numeric n) _)	= n
-cardValue (Card Ace _)			= 11
-cardValue (Card _ _)			= 10
-
-x1 = Clubs
-x2 = Diamonds
-x3 = Spades
-x4 = Hearts
-
-y1 = Jack
-y2 = Numeric 10
-y3 = Numeric 5
-
-z1 = Card y1 x1
-z2 = Card y2 x2
-z3 = Card y3 x3
-
-w = H [z1,z2,z3]
-y = Numeric 10
-
-z = Card y x4
-
-w2 = H [z,z,z]
-r = H [ Card Ace Diamonds, Card (Numeric 9) Spades, Card Jack Hearts]
