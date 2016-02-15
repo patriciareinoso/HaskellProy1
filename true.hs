@@ -33,7 +33,7 @@ find :: Environment -> String -> Maybe Bool
 find [] _ = Nothing				
 find ((x,y):l) k
 	| x == k 		= Just y 	
-	| otherwise 	= find l k
+	| otherwise 	= find l k 
 
 
 find2 :: Environment -> String -> Maybe Bool
@@ -65,7 +65,7 @@ addOrReplace l x b = 	if find l x == Nothing
 addOrReplace2 :: Environment -> String -> Bool -> Environment
 addOrReplace2 e k v = if find e k  == Nothing
 					  then (k,v):e
-					  else foldl addAux [] $ reverse e
+					  else foldl addAux [] e
 
 					  where
 					  	addAux nenv a@(str,bool) = if str == k 
@@ -89,7 +89,7 @@ remove e k = remAux e k []
 remove2 :: Environment -> String -> Environment
 remove2 e k = if find e k == Nothing
 			  then e
-			  else foldl remAux [] $ reverse e
+			  else foldl remAux [] e
 
 			  where
 			  	remAux nenv e = if fst e == k

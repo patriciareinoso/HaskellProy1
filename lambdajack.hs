@@ -23,7 +23,7 @@ data GameState = GS {
 
 -- La función 'welcome' da un mensaje de bienvenida al juego
 welcome :: IO String
-welcome = return "Bienvenido a LambdaJack"
+welcome = return "Bienvenido a LambdaJack\n¿Cómo te llamas?"
 
 
 {-
@@ -36,7 +36,8 @@ currentState :: GameState -> IO ()
 currentState g = putStrLn ( "\nDespués de " ++ (show.games)g ++ 
 							" partidas Lambda ha ganado "  ++
 							(show.lambdaWins)g ++ " y " ++ (name)g ++ 
-							" ha ganado " ++ show ((games)g - (lambdaWins)g))
+							" ha ganado " ++ show ((games)g - (lambdaWins)g) 
+							++ ".")
 
 {- 
  La función 'continuePlaying' pregunta al jugador si desea seguir jugando o no. 
@@ -78,24 +79,23 @@ anotherCard s h1 h2 = do
 		x <- getChar 					
 		options x
 		where options x 
-			|x == 'c' || x == 'C' = anotherCard s (fst (getCard h1 h2)) (snd (getCard h1 h2))
+			|x == 'c' || x == 'C' = anotherCard s (fst get) (snd get)
 			|x == 'l' || x == 'L' = return (h1,h2)
 			|otherwise 			  = anotherCard s h1 h2
+				where 
+					get = getCard h1 h2
+
 
 {- 
- La función 'getCard' inicializa la mano del jugador, y luego permite
- tomar una carta del mazo (utilizando la función draw del módulo LambdaJack)
+ La función 'getCard' reparte una carta al jugador. Utiliza la función draw del 
+ módulo LambdaJack)
  h1 :: Hand = Mazo para repartir
  h2 :: Hand = Mano del jugador
- Retorna: Tupla cuyo primer argumento es el nuevo mazo restante y el segundo
-		  es la mano del jugador
+ Retorna: Tupla cuyo primer argumento es el mazo restante y el segundo es la 
+ 		  mano del jugador
 -}
-getCard :: Hand -> Hand -> (Hand, Hand)
-getCard h1 h2 = if size h2 < 1
-				then getCard (fst (aux (draw h1 h2))) (snd (aux(draw h1 h2)))
-				else aux (draw h1 h2)
-				where 
-					aux (Just (x,y)) = (x,y)
+getCard :: Hand -> Hand -> (Hand,Hand) 
+getCard h1 h2 = maybe (empty, empty) id (draw h1 h2)
 
 
 {- 
@@ -146,7 +146,7 @@ updateState h1 h2 g = do
 -}
 isTie :: GameState -> IO GameState
 isTie g = do
-	putStrLn "\nEmpatamos, así que yo gano"
+	putStrLn "\nEmpatamos, así que yo gano."
 	return (GS ((games)g+1) ((lambdaWins)g+1) ((name)g) ((generator)g))
 
 
@@ -158,7 +158,7 @@ isTie g = do
 -}
 winnerLambda :: GameState -> IO GameState
 winnerLambda g  = do
-	putStrLn "\nYo gano"
+	putStrLn "\nYo gano."
 	return (GS ((games)g+1) ((lambdaWins)g+1) ((name)g) ((generator)g))
 
 
@@ -170,7 +170,7 @@ winnerLambda g  = do
 -}
 winnerYou :: GameState -> IO GameState
 winnerYou g  = do
-	putStrLn "\nTú ganas"
+	putStrLn "\nTú ganas."
 	return (GS ((games)g+1) ((lambdaWins)g) ((name)g) ((generator)g))
 
 
@@ -186,7 +186,9 @@ gameloop g = do
 	-- mano inicial con dos cartas para el jugador
 	gen<-R.newStdGen
 	--cambiar gen por ((generator)g)
-	let initial = getCard (shuffle gen fullDeck) empty
+	let initial = getCard (fst firstcard) (snd firstcard)
+		where 
+			firstcard = getCard (shuffle gen fullDeck) empty
 	
 	-- Se pregunta al jugador si desea otra carta o "se queda"
 	changeturn <- anotherCard ((name)g) (fst initial) (snd initial)
@@ -214,11 +216,11 @@ gameloop g = do
 	x <- continuePlaying
 	if x 
 	then gameloop newstate 					
-	else putStrLn "\n\nFin del juego\n"		
+	else putStrLn "\n\nFin del juego.\n"		
 
 -- main es una secuencia de instrucciones que representan Lambda-Jack
-main =	welcome >>= (\c -> putStrLn c) >> putStrLn "\n¿Cómo te llamas?" 
-				>> getLine >>= (\name->gameloop (GS 0 0 name (R.mkStdGen 42)))
+main =	welcome >>= (\c -> putStrLn c) >> getLine 
+		>>= (\name->gameloop (GS 0 0 name (R.mkStdGen 42)))
 
 {- PRUEBAS -}
 
