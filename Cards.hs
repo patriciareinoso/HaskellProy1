@@ -1,17 +1,23 @@
 {-
 	Cards.hs
-	Módulo con los tipos de datos y funciones necesarias para la manipulación de cartas utilizadas en Lambda-Jack
+	Módulo con los tipos de datos y funciones necesarias para la manipulación de
+	cartas utilizadas en Lambda-Jack
 	Hecho por:	Richard Lares 		11-10508
 				Patricia Reinoso 	11-10851
 -}
 
-module Cards ( Hand(H), Suit (Clubs,Diamonds,Spades,Hearts), Value (Numeric,Jack,Queen,King,Ace), Card(Card),
-				empty, size ) where
+module Cards ( Hand(H), 
+			   Suit (Clubs,Diamonds,Spades,Hearts), 
+			   Value (Numeric,Jack,Queen,King,Ace), 
+			   Card(Card),
+			   empty,
+			   size) where
 
--- Tipo de datos para representar los "palos" de la baraja francesa: Trébol, Diamante, Pica y Corazón
+-- Tipo de datos para representar los "palos" de la baraja francesa: 
+-- Trébol, Diamante, Pica y Corazón
 data Suit = Clubs | Diamonds | Spades | Hearts deriving (Eq)
 
--- Se define show para cada constructor, cambiando su nombre por śu símbolo
+-- Se define show para cada constructor, cambiando su nombre por su símbolo
 instance Show Suit where
 	show Clubs    = "♧" 
 	show Diamonds = "♦" 
@@ -32,14 +38,16 @@ instance Show Value where
 -- Tipo de datos para representar la baraja francesa
 data Card = Card {
 					value :: Value,
-					suit :: Suit
+					suit  :: Suit
 				 }
 
--- Se define show para mostrar el palo y el valor de una carta, en lugar de sus constructores
+-- Se define show para mostrar el palo y el valor de una carta, en lugar de sus 
+-- constructores
 instance Show Card where
 	show c = (show.suit)c ++ (show.value)c
 
--- Se define eq, de manera que dos cartas son iguales cuando tienen mismo palo y mismo valor, y son diferentes eoc
+-- Se define eq, de manera que dos cartas son iguales cuando tienen mismo palo y 
+-- mismo valor, y son diferentes eoc
 instance Eq Card where
 	(==) (Card a b) (Card c d) 	= (a==c) && (b==d)
 	(/=) c v 					= not (c==v)

@@ -1,8 +1,9 @@
 {-
 	hof.hs
-	Archivo que contiene diferentes implantaciones de la función filter de Haskell utilizando diferentes estrategias
-	Hecho por:	Richard Lares 		11-10508
-				Patricia Reinoso 	11-10851
+	Archivo que contiene diferentes implantaciones de la función filter de 
+	Haskell utilizando diferentes estrategias
+	Realizado por:	Richard Lares 		11-10508
+					Patricia Reinoso 	11-10851
 -}
 
 -- Implantación de filter utilizando listas por comprensión
