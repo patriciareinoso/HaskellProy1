@@ -14,7 +14,6 @@ module Cards ( Hand(H),
 			   size) where
 
 -- Tipo de datos para representar los "palos" de la baraja francesa: 
--- Trébol, Diamante, Pica y Corazón
 data Suit = Clubs | Diamonds | Spades | Hearts deriving (Eq)
 
 -- Se define show para cada constructor, cambiando su nombre por su símbolo
@@ -41,13 +40,15 @@ data Card = Card {
 					suit  :: Suit
 				 }
 
--- Se define show para mostrar el palo y el valor de una carta, en lugar de sus 
--- constructores
+-- Se define show para mostrar el palo y el valor de una carta 
 instance Show Card where
 	show c = (show.suit)c ++ (show.value)c
 
--- Se define eq, de manera que dos cartas son iguales cuando tienen mismo palo y 
--- mismo valor, y son diferentes eoc
+
+{-
+ Se define eq, de manera que dos cartas son iguales cuando tienen mismo palo y 
+ mismo valor, y son diferentes eoc
+-}
 instance Eq Card where
 	(==) (Card a b) (Card c d) 	= (a==c) && (b==d)
 	(/=) c v 					= not (c==v)
@@ -60,10 +61,10 @@ instance Show Hand where
 	show (H []) 	= ""
 	show (H (x:xs)) = show x ++ " " ++ show (H xs)
 
--- La función empty produce una mano vacía
+-- La función 'empty' produce una mano vacía
 empty :: Hand
 empty = H []
 
--- La función size determina la cantidad de cartas en una mano
+-- La función 'size' recibe una mano y determina cuántas cartas tiene
 size :: Hand -> Int
 size (H h) = length h

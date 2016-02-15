@@ -24,7 +24,7 @@ import qualified System.Random as R
 data Player = LambdaJack | You deriving (Show)
 
 
--- La función value determina el valor numérico de una mano
+-- La función 'value' recibe una mano y retorna el valor numérico de ella
 value :: Hand -> Int
 value (H xs) = if fst res > 21 
 			   then fst res - (snd res) * 10 
@@ -46,37 +46,46 @@ value (H xs) = if fst res > 21
 					   else (y1+v,y2)) (0,0) xs 
 
 
--- La función busted indica si una mano "explotó" por exceder 21 																			
+-- La función 'busted' recibe una mano e indica si "explotó" por exceder 21 																			
 busted :: Hand -> Bool
 busted h = value h > 21
 
 
--- La función winner compara la mano del jugador (h2) con la de Lambda (h1) 
--- para determinar el ganador 
+{-
+ La función 'winner' compara la mano del jugador con la de Lambda para 
+ determinar el ganador. 
+ h1 :: Hand = Mano de lambda
+ h2 :: Hand = Mano del jugador
+ Retorna: Jugador ganador.
+-}
 winner :: Hand -> Hand -> Player
-winner h1 h2 = if busted h1 && busted h2 then LambdaJack 		
-			   else if busted h2 then LambdaJack 				
-			   else if busted h1 then You 					
+winner h1 h2 = if busted h1 && busted h2   then LambdaJack 		
+			   else if busted h2           then LambdaJack 				
+			   else if busted h1 		   then You 					
 			   else if value h1 < value h2 then You 	
 			   else LambdaJack 					
 												
 
--- La función fullDeck devuelve un mazo completo de la baraja en cualquier orden
+-- La función 'fullDeck' devuelve un mazo completo de la baraja
 fullDeck :: Hand
 fullDeck = H [Card x y | x<-map (Numeric)[2..10] ++ [Jack , Queen , King , Ace],
-				         y<-[Clubs , Diamonds , Spades , Hearts]  ]
+				         y<-[Clubs , Diamonds , Spades , Hearts] ]
 
 
--- La función draw retira la primera carta del mazo de cartas y la añade a la
--- mano del jugador, si es posible
+{-
+ La función 'draw' retira la primera carta del mazo de cartas y la añade a la
+ mano del jugador, si es posible
+ Arg1 :: Hand = Mazo a repartir
+ Arg2 :: Hand = Mazo del jugador
+ Retorna = Tupla cuyo primer argumento es el mazo restante y el segundo la mano
+           del jugador
+-} 
 draw :: Hand -> Hand -> Maybe (Hand,Hand)
 draw d@(H []) h 	   = Just (d,h)						
 draw (H (x:xs)) (H ys) = Just (H xs, (H (x:ys)))	
 													
 
--- La función playLambda produce la mano de Lambda siguiendo las reglas con las 
--- que debe jugar a partir del mazo que quedó después de la jugada del jugador,
--- valga la redundancia
+--  La función 'playLambda' recibe el mazo y retorna la mano de Lambda
 playLambda :: Hand -> Hand
 playLambda d = auxL d (H [])
 	where	
@@ -89,7 +98,10 @@ playLambda d = auxL d (H [])
 								   else auxL (H xs) (H (x:ys))
 								   
 		
--- La función shuffle recibe un mazo sin barajar y lo baraja		
+{- 
+ La función 'shuffle' recibe un valor StdGen (asiste en la generación de 
+ números al azar), un mazo sin barajar y retorna el mazo barajado
+-}
 shuffle :: R.StdGen -> Hand -> Hand
 -- El acumulador del fold es una tripleta con el mazo acumulador, el generador, y el mazo original, respectivamente
 shuffle g (H a) = first $ foldl checkCard ((H []),g,a) a 

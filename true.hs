@@ -6,9 +6,11 @@
 					Patricia Reinoso 	11-10851
 -}
 
--- Tipo de datos recursivo monomórfico para representar expresiones de lógica 
--- proposicional. Constructor para las constantes booleanas, variables, 
--- negación, conjunción, disyunción e implicación.
+{-
+ Tipo de datos recursivo monomórfico para representar expresiones de lógica 
+ proposicional. Constructor para las constantes booleanas, variables, 
+ negación, conjunción, disyunción e implicación.
+-} 
 data Proposition = Constant Bool						
 				 | Variable String						
 				 | Negation Proposition 				
@@ -22,8 +24,11 @@ data Proposition = Constant Bool
 type Environment = [(String,Bool)]
 
 
--- La función find busca una variable en un ambiente de evaluación y devuelve su
--- valor (si la misma existe)
+{- 
+ La función 'find' recibe un ambien de evaluación y el nombre de una variable.
+ Busca la variable en un ambiente de evaluación y devuelve su valor 
+ (si la misma existe)
+-}
 find :: Environment -> String -> Maybe Bool
 find [] _ = Nothing				
 find ((x,y):l) k
@@ -40,8 +45,11 @@ find2 e k = foldl findAux Nothing e
 								 	   else Nothing
 
 
--- La función addOrReplace añade una variable a un ambiente, o modifica el valor
--- de ésta si ya existía en dicho ambiente
+{-
+ La función 'addOrReplace' recibe un ambiente de evaluación, una variable y 
+ su respectivo valor. Añade la variable al ambiente, o modifica su valor si 
+ ésta ya existía en dicho ambiente
+-}
 addOrReplace :: Environment -> String -> Bool -> Environment
 addOrReplace l x b = 	if find l x == Nothing	
 							then (x,b):l 			
@@ -64,10 +72,11 @@ addOrReplace2 e k v = if find e k  == Nothing
 					  							   then (str,v):nenv
 					  							   else a:nenv
 
-
--- La función remove elimina una variable de un ambiente de evaluación en caso
--- de que exista dicha variable. En caso contrario produce el mismo ambiente sin
--- modificar.	
+{-
+ La función 'remove' recibe un ambiente de evaluación y el nombre de una 
+ variable.  En caso de que la variable exista en dicho ambiente, la elimina. 
+ En caso contrario produce el mismo ambiente sin modificar.	
+-}
 remove :: Environment -> String -> Environment
 remove e k = remAux e k []
 	where 	
@@ -88,8 +97,10 @@ remove2 e k = if find e k == Nothing
 			  					else e:nenv
 
 
--- La función evalP recorre una proposición apoyándose en un ambiente de 
--- evaluación y calcula su valor de verdad
+{-
+ La función 'evalP' recorre una proposición apoyándose en un ambiente de 
+ evaluación y calcula su valor de verdad
+-} 
 evalP :: Environment -> Proposition -> Maybe Bool
 
 evalP _ (Constant b) 	  = Just b 		
@@ -114,10 +125,11 @@ evalP e (Implication p q) = evalImpAux (evalP e p) (evalP e q)
 								evalImpAux (Just True) (Just False) = Just False
 								evalImpAux _ _				        = Just True
 
-
--- La función vars extrae los nombres de variables de una proposición. Si una 
--- variable aparece más de una vez en una proposición, la función garantiza que
--- no se repitan.								
+{-
+ La función 'vars' extrae los nombres de variables de una proposición y los 
+ retorna en una lista. Si una variable aparece más de una vez en una proposición, 
+ la función garantiza que no se repitan.								
+-}
 vars :: Proposition -> [String]
 vars p = varsAux p []
 	where
@@ -128,9 +140,10 @@ vars p = varsAux p []
 		varsAux (Disjunction p q) xs  = varsAux p (varsAux q xs)
 		varsAux (Implication p q) xs  = varsAux p (varsAux q xs)
 
-
--- La función isTautology genera todos los ambientes de evaluación posibles para
--- una proposición lógica dada, y determina si ésta es una tautología
+{-
+ La función 'isTautology' genera todos los ambientes de evaluación posibles 
+ para una proposición lógica dada, y determina si ésta es una tautología
+-}
 isTautology :: Proposition -> Bool
 isTautology p =  foldr f True (map (\x -> evalP x p) (aux(vars p)))
 	where 
