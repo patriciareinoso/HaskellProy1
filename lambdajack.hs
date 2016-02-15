@@ -20,23 +20,28 @@ data GameState = GS {
 					 generator  :: R.StdGen -- Generador de números al azar
 					} deriving (Show)
 
--- La función welcome da un mensaje de bienvenida al juego
+
+-- La función 'welcome' da un mensaje de bienvenida al juego
 welcome :: IO String
 welcome = return "Bienvenido a LambdaJack"
 
 
--- La función currentState muestra cuántas partidas se han jugado, cuántas ha 
--- ganado Lambda y cuántas ha ganado el jugador
+{-
+ La función 'currentState' muestra cuántas partidas se han jugado, cuántas ha 
+ ganado Lambda y cuántas ha ganado el jugador
+ g :: GameState = estado de juego
+ Retorna: mensaje
+-} 
 currentState :: GameState -> IO ()
 currentState g = putStrLn ( "\nDespués de " ++ (show.games)g ++ 
 							" partidas Lambda ha ganado "  ++
 							(show.lambdaWins)g ++ " y " ++ (name)g ++ 
 							" ha ganado " ++ show ((games)g - (lambdaWins)g))
 
-
--- La función continuePlaying pregunta al jugador si desea seguir jugando o no, 
--- retornando un booleano con la respuesta para continuar con el juego o 
--- finalizar su ejecuición
+{- 
+ La función 'continuePlaying' pregunta al jugador si desea seguir jugando o no. 
+ Retorna: IO True si el jugador desea seguir jugando IO False en caso contrario
+-}
 continuePlaying :: IO Bool
 continuePlaying = do
 	putStrLn "\n¿Desea seguir jugando? [s/n]"
@@ -53,12 +58,15 @@ continuePlaying = do
 		|otherwise = continuePlaying
 
 
--- La función anotherCard presenta al jugador sus cartas e indica su puntuación.
--- Representa el turno del jugador
--- Primer argumento: nombre del jugador
--- Segundo argumento: 
--- Tercer agumento:
--- Retorna: 
+{- 
+ La función 'anotherCard' presenta al jugador sus cartas e indica su 
+ puntuación. Representa el turno del jugador
+ s  :: String = Nombre del jugador
+ h1 :: Hand   = Mazo a repartir
+ h2 :: Hand   = Mano del jugador
+ Retorna: Tupla cuyo primer argumento es el mazo restante y el segundo la mano 
+ 		  del jugador
+-}
 anotherCard :: String -> Hand -> Hand -> IO (Hand, Hand)
 anotherCard s h1 h2 = do
 	if (busted h2)
@@ -74,12 +82,14 @@ anotherCard s h1 h2 = do
 			|x == 'l' || x == 'L' = return (h1,h2)
 			|otherwise 			  = anotherCard s h1 h2
 
-
--- La función getCard inicializa la mano del jugador, y luego permite
--- tomar una carta del mazo (utilizando la función draw del módulo LambdaJack)
--- Primer argumento:
--- Segunto argumento:
--- Retorna: 
+{- 
+ La función 'getCard' inicializa la mano del jugador, y luego permite
+ tomar una carta del mazo (utilizando la función draw del módulo LambdaJack)
+ h1 :: Hand = Mazo para repartir
+ h2 :: Hand = Mano del jugador
+ Retorna: Tupla cuyo primer argumento es el nuevo mazo restante y el segundo
+		  es la mano del jugador
+-}
 getCard :: Hand -> Hand -> (Hand, Hand)
 getCard h1 h2 = if size h2 < 1
 				then getCard (fst (aux (draw h1 h2))) (snd (aux(draw h1 h2)))
@@ -88,28 +98,36 @@ getCard h1 h2 = if size h2 < 1
 					aux (Just (x,y)) = (x,y)
 
 
--- Primer argumento: Nombre del jugador
--- Segunto argumento: Mano del jugador
--- Retona: mensaje indicando la mano del jugador y su puntuación
+{- 
+ La función 'playerMsg' muestra un mensaje al jugador. Indica  mano y puntuación
+ s :: String = Nombre del jugador
+ h :: Hand = Mano del jugador
+ Retorna: Mensaje
+-}
 playerMsg :: String -> Hand -> IO ()
 playerMsg s h = do
 	putStr $ "\n" ++ s ++ ", tu mano es " ++ show h ++ ", suma " 
 	         ++ show (value h) ++ ". "
 
 
--- Primer argumento: Mano de Lambda.
--- Retorna: muestra mensaje indicando la mano de Lambda y su puntuación
+{-
+ La función 'lambdaMsg' muestra la mano y puntuación de Lambda
+ h :: Hand = Mano de Lambda
+ Retorna: Mensaje
+-}
 lambdaMsg :: Hand -> IO ()
 lambdaMsg h = do 
 	putStrLn $ "\nMi mano es " ++ show h ++ ", suma " ++ show (value h) ++ ". "
 
 
--- La función updateStatus actualiza el gamestate del juego dependiendo de 
--- quién ganó la última partida jugada
--- Primer argumento:
--- Segundo argumento:
--- Tercer argumento: 
--- Retorna: 
+{-
+ La función 'updateStatus' llama a funciones para actualizar el estado de juego 
+ dependiendo de quién ganó la última partida
+ h1 :: Hand = Mano de Lambda
+ h2 :: Hand = Mano del jugador
+ g  :: Estado de juego actual
+ Retorna: Nuevo estado de juego
+-}
 updateState :: Hand -> Hand -> GameState -> IO GameState
 updateState h1 h2 g = do
 	if (value h1) == (value h2)
@@ -120,39 +138,47 @@ updateState h1 h2 g = do
 			aux You 		= winnerYou g 	
 
 
--- La función isTie actualiza el gamestate y muestra un mensaje de empate 
--- (igual gana Lambda)
--- Primer argumento: 
--- Retorna: 
+{-
+ La función 'isTie' actualiza el estado de juego en caso de empate. 
+ Muestra un mensaje.
+ g :: estado actual del juego
+ Retorna: Nuevo estado del juego
+-}
 isTie :: GameState -> IO GameState
 isTie g = do
 	putStrLn "\nEmpatamos, así que yo gano"
 	return (GS ((games)g+1) ((lambdaWins)g+1) ((name)g) ((generator)g))
 
 
--- La función winnerLambda actualiza el gamestate y muestra un mensaje de Lambda 
--- como ganador
--- Primer argumento: 
--- Retorna: 
+{-
+ La función 'winnerLambda' actualiza el estado de juego en el caso donde Lambda 
+ gana. Muestra un mensaje  
+ g :: estado actual del juego
+ Retorna: Nuevo estado del juego
+-}
 winnerLambda :: GameState -> IO GameState
 winnerLambda g  = do
 	putStrLn "\nYo gano"
 	return (GS ((games)g+1) ((lambdaWins)g+1) ((name)g) ((generator)g))
 
 
--- La función winnerYou actualiza el gamestate y muestra un mensaje del jugador 
--- como ganador
--- Primer argumento: 
--- Retorna: 
+{-
+ La función 'winnerYou' actualiza el estado de juego en el caso donde el jugador
+ gana. Muestra un mensaje  
+ g :: estado actual del juego
+ Retorna: Nuevo estado del juego
+-}
 winnerYou :: GameState -> IO GameState
 winnerYou g  = do
-	putStrLn "\nTu ganas"
+	putStrLn "\nTú ganas"
 	return (GS ((games)g+1) ((lambdaWins)g) ((name)g) ((generator)g))
 
 
--- La función gameloop representa el ciclo de una partida que finaliza cuando el 
--- jugador lo indique (sea durante la ejecución normal del programa o mediante 
--- una interrupción por teclado)
+{- 
+ La función gameloop representa el ciclo de una partida que finaliza cuando el 
+ jugador lo indique (sea durante la ejecución normal del programa o mediante 
+ una interrupción por teclado)
+-}
 gameloop :: GameState -> IO ()
 gameloop g = do
 
