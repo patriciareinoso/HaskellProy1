@@ -182,10 +182,9 @@ winnerYou g  = do
 gameloop :: GameState -> IO ()
 gameloop g = do
 
-	-- Se prepara un mazo nuevo, luego se baraja, y finalmente se genera una 
-	-- mano inicial con dos cartas para el jugador
-	gen<-R.newStdGen
-	--cambiar gen por ((generator)g)
+	gen <- R.newStdGen
+	-- Se prepara un mazo nuevo, luego se baraja, y se genera una mano inicial 
+	-- con dos cartas para el jugador
 	let initial = getCard (fst firstcard) (snd firstcard)
 		where 
 			firstcard = getCard (shuffle gen fullDeck) empty
