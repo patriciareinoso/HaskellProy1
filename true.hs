@@ -147,12 +147,22 @@ vars p = varsAux p []
 isTautology :: Proposition -> Bool
 isTautology p =  foldr f True (map (\x -> evalP x p) (aux(vars p)))
 	where 
-		-- aux es una función auxiliar que genera la lista con todos los ambientes de evaluación posibles para una lista
-		-- de variables dada
+		-- aux es una función auxiliar que genera la lista con todos los 
+		-- ambientes de evaluación posibles para una lista de variables dada
 		aux = foldr (\x y -> (map ((x,True):) y) ++ (map ((x,False):) y)) [[]] 
 		-- f evalua la conjunción entre un Just Bool y Bool (para aplicarlo con los resultados de evalP de cada ambiente)
 		f (Just a) b = a && b
 		f _ _ 		= error "No está definido"
+
+isTautology2 :: Proposition -> Bool
+isTautology2 p = foldl (\x y -> f x (evalP y p)) True (aux(vars p))
+	where 
+		-- f evalua la conjunción entre Bool y un Just Bool
+		f a (Just b) = a && b
+		f _ _ 		= error "No está definido"
+		-- aux es una función auxiliar que genera la lista con todos los 
+		-- ambientes de evaluación posibles para una lista de variables dada
+		aux = foldr (\x y -> (map ((x,True):) y) ++ (map ((x,False):) y)) [[]] 
 
 {- PRUEBAS -}
 
