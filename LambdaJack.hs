@@ -118,6 +118,17 @@ shuffle g (H a) = first $ foldl checkCard ((H []),g,a) a
 			-- La función first devuelve el primer elemento de una tripleta
 			first (a,b,c) 		= a
 
+shuffle2 :: R.StdGen -> Hand -> (Hand,Hand,R.StdGen)
+shuffle2 g (H a) = foldl (\x y -> (checkCard x y)) (H [],H[],g) a
+	where
+		checkCard (h1@(H xs),h2@(H ys), g) y = let 
+												ng = R.randomR (0,1) g
+
+												in if ((fst ng) == 0)
+												   then ((H (y : xs)), h2, snd ng)
+												   else (h1,(H (y : ys)),snd ng)
+
+		-- first (a,b,c) 		= a
 {- PRUEBAS -} 
 
 differents (H xs) = and $ map (/=head xs) (tail xs)
